@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/rxjs/5.5.8/Rx.js"></script>
+  <title>자동완성</title>
+</head>
+<style>
+  ul {
+    list-style: none;
+  }
+  ul li {
+    font-size:20px;
+    font-weight: 700;
+  }
+</style>
+
+<body>
+  <input id="search" type="text">
+  <ul id="results"></ul>
+  <script>
+    const testData = 
+      '김태리,이효리,전지현,장규리,아이린, 슬기, 강다니엘, 셔누,김세정,이청하,채영,나연, 박기량,이슬, 이소라'.replace(/\s/g, '').split(',');
+    const searchEl = document.getElementById('search'),
+          resultsEl = document.getElementById('results');
+
+    Rx.Observable.fromEvent(searchEl, 'keyup')
+    .map(event => event.target.value)
+    .flatMap(query => Rx.Observable.of(findAccounts(query)))
+    //.do(console.log)
+    .subscribe(result => {
+      console.log(result);
+      if (result.length === 0){
+        clearResults(resultsEl);
+      }else {
+        appendResults(resultsEl, result);
+      }
+    });
+
+    function findAccounts(query){
+      return testData.filter(item => 
+      query.length > 0 && item.startsWith(query));
+    }
+
+    function appendResults(resultsEl, result){
+      resultsEl.innerHTML = `<li>${result}</li>`;
+    }
+    
+    function clearResults(resultsEl){
+      resultsEl.innerHTML = '';
+    }
+  </script>
+</body>
+</html>
